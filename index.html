@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocteurVoice</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2E7D32">
+  <style>
+    body { font-family: Arial; text-align: center; padding: 20px; background: #E8F5E9; }
+    h1 { color: #2E7D32; }
+    button { padding: 20px 30px; font-size: 18px; border-radius: 50px; background: #2E7D32; color: white; border: none; margin: 10px; }
+    select { padding: 10px; font-size: 16px; margin: 10px; border-radius: 8px; }
+    #reponse { margin-top: 20px; font-size: 18px; background: white; padding: 15px; border-radius: 10px; text-align: left; }
+    .alerte { font-size: 12px; color: red; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🩺 DocteurVoice</h1>
+  <p>Parle pour décrire ton problème</p>
+
+  <select id="langue">
+    <option value="fr">Français</option>
+    <option value="mo">Mooré</option>
+    <option value="di">Dioula</option>
+  </select>
+  <br>
+  <button id="parler">🎤 Parler</button>
+  <div id="reponse"></div>
+  <p class="alerte">Attention: Ceci n'est pas un médecin. En cas d'urgence, allez au CSPS ou appelez le 112.</p>
+
+  <script src="app.js"></script>
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
