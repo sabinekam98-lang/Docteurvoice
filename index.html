@@ -1,40 +1,69 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DocteurVoice</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2E7D32">
-  <style>
-    body { font-family: Arial; text-align: center; padding: 20px; background: #E8F5E9; }
-    h1 { color: #2E7D32; }
-    button { padding: 20px 30px; font-size: 18px; border-radius: 50px; background: #2E7D32; color: white; border: none; margin: 10px; }
-    select { padding: 10px; font-size: 16px; margin: 10px; border-radius: 8px; }
-    #reponse { margin-top: 20px; font-size: 18px; background: white; padding: 15px; border-radius: 10px; text-align: left; }
-    .alerte { font-size: 12px; color: red; margin-top: 20px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocteurVoice</title>
+<style>
+body {font-family: Arial; background: #e8f5e9; text-align: center; padding: 20px;}
+h1 {color: #2e7d32;}
+button {background: #2e7d32; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 50px; cursor: pointer;}
+#resultat {background: white; margin: 20px auto; padding: 15px; border-radius: 10px; max-width: 400px; text-align: left;}
+.alerte {color: red; font-size: 12px; margin-top: 20px;}
+</style>
 </head>
 <body>
-  <h1>🩺 DocteurVoice</h1>
-  <p>Parle pour décrire ton problème</p>
 
-  <select id="langue">
-    <option value="fr">Français</option>
-    <option value="mo">Mooré</option>
-    <option value="di">Dioula</option>
-  </select>
-  <br>
-  <button id="parler">🎤 Parler</button>
-  <div id="reponse"></div>
-  <p class="alerte">Attention: Ceci n'est pas un médecin. En cas d'urgence, allez au CSPS ou appelez le 112.</p>
+<h1>🩺 DocteurVoice</h1>
+<p>Parle pour décrire ton problème</p>
 
-  <script src="app.js"></script>
-  <script>
-    if('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-  </script>
+<button id="btn">🎤 Parler</button>
+
+<div id="resultat"></div>
+
+<p class="alerte">Attention: Ceci n'est pas un médecin. En cas d'urgence, allez au CSPS ou appelez le 112.</p>
+
+<script>
+const btn = document.getElementById('btn');
+const resultat = document.getElementById('resultat');
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang = 'fr-FR';
+
+btn.onclick = () => {
+  recognition.start();
+  btn.innerText = "🎤 J'écoute...";
+}
+
+recognition.onresult = (event) => {
+  const texte = event.results[0][0].transcript.toLowerCase();
+  btn.innerText = "🎤 Parler";
+  donnerConseil(texte);
+}
+
+function donnerConseil(texte) {
+  let reponse = "Désolé, je n'ai pas compris. Décris tes symptômes.";
+  
+  if(texte.includes("ventre") || texte.includes("estomac")) {
+    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Ventre:</b> Bois beaucoup d'eau. Mange léger: riz, banane. Évite le gras et le piment. Si douleur > 3 jours, va au CSPS.`;
+  }
+  else if(texte.includes("tête") || texte.includes("migraine")) {
+    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Mal de tête:</b> Repose-toi dans le calme. Bois de l'eau. Prends du paracétamol si besoin. Si très fort ou avec fièvre, consulte.`;
+  }
+  else if(texte.includes("fièvre") || texte.includes("chaud")) {
+    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Fièvre:</b> Bois beaucoup d'eau + paracétamol. Dégage-toi. Va au CSPS si >39° ou si ça dure >3 jours.`;
+  }
+  else if(texte.includes("toux") || texte.includes("rhume")) {
+    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Toux:</b> Bois du thé chaud au miel et citron. Évite le froid. Si toux > 2 semaines, va consulter.`;
+  }
+  else if(texte.includes("paludisme") || texte.includes("palu") || texte.includes("courbature")) {
+    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Attention Palu:</b> Fièvre + courbatures = va faire un test au CSPS rapidement. Ne prends pas de médicaments sans avis.`;
+  }
+  
+  resultat.innerHTML = reponse;
+}
+</script>
+
 </body>
 </html>
