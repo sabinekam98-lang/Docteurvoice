@@ -39,49 +39,6 @@ const conseils = {
   },
   "mos": {
     "ventre": "Yi koom a yiib. Di raas, laare. A yelle tawa 3 zii, wa CSPS.",
-    "tete": "Leogse. Yi koom. A raan paracétamol.",
-    "fievre": "Yi koom a yiib. A yelle tawa 2 zii, wa CSPS.",
-    "palu": "Palu yaa kabe. Taag ta wa CSPS raag taare.",<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DocteurVoice V3 - 3 Langues</title>
-<style>
-body { font-family: Arial; background: #e8f5e9; text-align: center; padding: 20px; }
-h1 { color: #2e7d32; }
-select, button { padding: 15px; font-size: 16px; border-radius: 10px; margin: 10px; border: none; }
-button { background: #2e7d32; color: white; cursor: pointer; }
-.urgence { background: red; }
-#resultat { background: white; margin: 20px auto; padding: 20px; border-radius: 10px; max-width: 500px; text-align: left; }
-</style>
-</head>
-<body>
-<h1>🩺 DocteurVoice V3</h1>
-<select id="langue">
-  <option value="fr">Français</option>
-  <option value="mos">Mooré</option>
-  <option value="dyu">Dioula</option>
-</select>
-<br>
-<button onclick="ecouter()">🎤 Parler</button>
-<button class="urgence" onclick="appeler()">🚨 Urgence 112</button>
-<div id="resultat"></div>
-
-<script>
-const conseils = {
-  "fr": {
-    "ventre": "Bois beaucoup d'eau. Mange léger: riz, banane. Si douleur > 3 jours, va au CSPS.",
-    "tete": "Repose-toi. Bois de l'eau. Paracétamol si besoin.",
-    "fievre": "Bois beaucoup d'eau. Si fièvre > 38.5°C pendant 2 jours, va au CSPS.",
-    "palu": "Attention Palu possible. Va faire un test au CSPS rapidement.",
-    "plaie": "Lave à l'eau + savon. Mets bétadine. Si pus, va au CSPS.",
-    "dent": "Rince à l'eau salée tiède. Va chez le dentiste si ça dure.",
-    "yeux": "Ne te frotte pas. Lave avec eau propre bouillie. Si pus, va au CSPS.",
-    "stress": "Respire 5 min. Parle à quelqu'un. Marche 20 min."
-  },
-  "mos": {
-    "ventre": "Yi koom a yiib. Di raas, laare. A yelle tawa 3 zii, wa CSPS.",
     "tete": "Leogse. Yi koom. Un coup de paracétamol.",
     "fievre": "Yi koom a yiib. A yelle tawa 2 zii, wa CSPS.",
     "palu": "Palu yaa kabe. Taag ta wa CSPS raag taare.",
@@ -92,7 +49,7 @@ const conseils = {
   },
   "dyu": {
     "ventre": "I ji ji ka caaya. A dimi : malo, banan. A ka 3 don, taa CSPS.",
-    "tete": "A laye. I ji ji. A ta paracétamol.",
+    "tete": "A laye. I ji. A ta paracétamol.",
     "fievre": "I ji ji ka caaya. A ka 2 don, taa CSPS.",
     "palu": "Palu be se. Taag wa CSPS ka jɛkɛ.",
     "plaie": "A ko a ji + sabuni. A la bétadine. A ka pus, taa CSPS.",
