@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DocteurVoice V3 - 3 Langues</title>
+<title>DocteurVoice V4</title>
 <style>
 body { font-family: Arial; background: #e8f5e9; text-align: center; padding: 20px; }
 h1 { color: #2e7d32; }
-select, button { padding: 15px; font-size: 16px; border-radius: 10px; margin: 10px; border: none; }
+select, button { padding: 15px; font-size: 16px; border-radius: 10px; margin: 8px; border: none; }
 button { background: #2e7d32; color: white; cursor: pointer; }
 .urgence { background: red; }
+.partager { background: #25D366; }
 #resultat { background: white; margin: 20px auto; padding: 20px; border-radius: 10px; max-width: 500px; text-align: left; }
 </style>
 </head>
 <body>
-<h1>🩺 DocteurVoice V3</h1>
+<h1>🩺 DocteurVoice V4</h1>
 <select id="langue">
   <option value="fr">Français</option>
   <option value="mos">Mooré</option>
@@ -23,15 +24,21 @@ button { background: #2e7d32; color: white; cursor: pointer; }
 <br>
 <button onclick="ecouter()">🎤 Parler</button>
 <button class="urgence" onclick="appeler()">🚨 Urgence 112</button>
+<button class="partager" onclick="partager()">📲 Partager</button>
 <div id="resultat"></div>
 
 <script>
+let dernierConseil = ""; // pour le partage
+
 const conseils = {
   "fr": {
     "ventre": "Bois beaucoup d'eau. Mange léger: riz, banane. Si douleur > 3 jours, va au CSPS.",
     "tete": "Repose-toi. Bois de l'eau. Paracétamol si besoin.",
     "fievre": "Bois beaucoup d'eau. Si fièvre > 38.5°C pendant 2 jours, va au CSPS.",
     "palu": "Attention Palu possible. Va faire un test au CSPS rapidement.",
+    "diarrhee": "SRO: 1L d'eau + 6 cuillères sucre + 1/2 sel. Si sang, va au CSPS.",
+    "tension": "Repose-toi. Évite le sel. Mesure ta tension au CSPS.",
+    "grossesse": "Prends acide folique. Va aux consultations prénatales au CSPS.",
     "plaie": "Lave à l'eau + savon. Mets bétadine. Si pus, va au CSPS.",
     "dent": "Rince à l'eau salée tiède. Va chez le dentiste si ça dure.",
     "yeux": "Ne te frotte pas. Lave avec eau propre bouillie. Si pus, va au CSPS.",
@@ -39,19 +46,25 @@ const conseils = {
   },
   "mos": {
     "ventre": "Yi koom a yiib. Di raas, laare. A yelle tawa 3 zii, wa CSPS.",
-    "tete": "Leogse. Yi koom. Un coup de paracétamol.",
+    "tete": "Leogse. Yi koom. Raan paracétamol.",
     "fievre": "Yi koom a yiib. A yelle tawa 2 zii, wa CSPS.",
     "palu": "Palu yaa kabe. Taag ta wa CSPS raag taare.",
+    "diarrhee": "SRO: koom 1L + sukra 6 + soab. A ka zem, wa CSPS.",
+    "tension": "Leogse. Da di soab. Wa CSPS ta soab kabe.",
+    "grossesse": "Di acide folique. Wa CSPS ta pɛg pɛg.",
     "plaie": "Kogde a koom + sabun. Zaks bétadine. A tuma pus, wa CSPS.",
     "dent": "Kogde a koom sore. Wa dentiste a yelle taa taaba.",
     "yeux": "Da kogse. Kogde a koom. A tuma pus, wa CSPS.",
     "stress": "Fooyem 5 min. Taa a taaba. Yidg a 20 min."
   },
   "dyu": {
-    "ventre": "I ji ji ka caaya. A dimi : malo, banan. A ka 3 don, taa CSPS.",
+    "ventre": "I ji ka caaya. A dimi : malo, banan. A ka 3 don, taa CSPS.",
     "tete": "A laye. I ji. A ta paracétamol.",
-    "fievre": "I ji ji ka caaya. A ka 2 don, taa CSPS.",
+    "fievre": "I ji ka caaya. A ka 2 don, taa CSPS.",
     "palu": "Palu be se. Taag wa CSPS ka jɛkɛ.",
+    "diarrhee": "SRO: ji 1L + sukaro 6 + kɔnɔ. A ka joli, taa CSPS.",
+    "tension": "A laye. I kana kɔnɔ ka caaya. Taa CSPS ka sɛgɛsɛ.",
+    "grossesse": "A ta acide folique. Taa CSPS ka jigi kɛ.",
     "plaie": "A ko a ji + sabuni. A la bétadine. A ka pus, taa CSPS.",
     "dent": "A ko a ji kɔgɔlen. Taa dentist fɛ.",
     "yeux": "I kana i nɔgɔ. A ko a ji. A ka pus, taa CSPS.",
@@ -60,9 +73,9 @@ const conseils = {
 };
 
 const motsCles = {
-  "fr": ["ventre","tete","fievre","palu","plaie","dent","yeux","stress"],
-  "mos": ["puga","yuur","wemda","palu","kombgo","nuo","gese","sore"],
-  "dyu": ["kono","kun","sumaya","palu","juru","nin","nya","hɛrɛ"]
+  "fr": ["ventre","tete","fievre","palu","diarrhee","tension","grossesse","plaie","dent","yeux","stress"],
+  "mos": ["puga","yuur","wemda","palu","yidg","soab","pɛga","kombgo","nuo","gese","sore"],
+  "dyu": ["kono","kun","sumaya","palu","boli","joli","bara","juru","nin","nya","hɛrɛ"]
 };
 
 function ecouter() {
@@ -79,13 +92,28 @@ function ecouter() {
         reponse = conseils[lang][cle];
       }
     });
+    dernierConseil = reponse;
     document.getElementById("resultat").innerHTML = "<b>Conseil:</b> " + reponse;
+    parler(reponse, lang); // 1. La voix parle
   };
   recognition.start();
 }
 
+function parler(texte, lang) {
+  const synth = window.speechSynthesis;
+  const utter = new SpeechSynthesisUtterance(texte);
+  utter.lang = lang === 'fr'? 'fr-FR' : 'fr-FR'; // Téléphones lisent mal mos/dyu, donc fr
+  synth.speak(utter);
+}
+
 function appeler() {
   window.location.href = "tel:112";
+}
+
+function partager() { // 3. Partager sur WhatsApp
+  if(dernierConseil === "") { alert("Donne d'abord un conseil avec 🎤"); return; }
+  const texte = "Conseil DocteurVoice: " + dernierConseil;
+  window.open("https://wa.me/?text=" + encodeURIComponent(texte));
 }
 </script>
 </body>
