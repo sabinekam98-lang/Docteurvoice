@@ -1,0 +1,9 @@
+{
+  "name": "DocteurVoice",
+  "short_name": "DocteurVoice",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#E8F5E9",
+  "theme_color": "#2E7D32",
+  "icons": []
+}
