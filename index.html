@@ -41,16 +41,59 @@ const conseils = {
     "ventre": "Yi koom a yiib. Di raas, laare. A yelle tawa 3 zii, wa CSPS.",
     "tete": "Leogse. Yi koom. A raan paracétamol.",
     "fievre": "Yi koom a yiib. A yelle tawa 2 zii, wa CSPS.",
+    "palu": "Palu yaa kabe. Taag ta wa CSPS raag taare.",<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocteurVoice V3 - 3 Langues</title>
+<style>
+body { font-family: Arial; background: #e8f5e9; text-align: center; padding: 20px; }
+h1 { color: #2e7d32; }
+select, button { padding: 15px; font-size: 16px; border-radius: 10px; margin: 10px; border: none; }
+button { background: #2e7d32; color: white; cursor: pointer; }
+.urgence { background: red; }
+#resultat { background: white; margin: 20px auto; padding: 20px; border-radius: 10px; max-width: 500px; text-align: left; }
+</style>
+</head>
+<body>
+<h1>🩺 DocteurVoice V3</h1>
+<select id="langue">
+  <option value="fr">Français</option>
+  <option value="mos">Mooré</option>
+  <option value="dyu">Dioula</option>
+</select>
+<br>
+<button onclick="ecouter()">🎤 Parler</button>
+<button class="urgence" onclick="appeler()">🚨 Urgence 112</button>
+<div id="resultat"></div>
+
+<script>
+const conseils = {
+  "fr": {
+    "ventre": "Bois beaucoup d'eau. Mange léger: riz, banane. Si douleur > 3 jours, va au CSPS.",
+    "tete": "Repose-toi. Bois de l'eau. Paracétamol si besoin.",
+    "fievre": "Bois beaucoup d'eau. Si fièvre > 38.5°C pendant 2 jours, va au CSPS.",
+    "palu": "Attention Palu possible. Va faire un test au CSPS rapidement.",
+    "plaie": "Lave à l'eau + savon. Mets bétadine. Si pus, va au CSPS.",
+    "dent": "Rince à l'eau salée tiède. Va chez le dentiste si ça dure.",
+    "yeux": "Ne te frotte pas. Lave avec eau propre bouillie. Si pus, va au CSPS.",
+    "stress": "Respire 5 min. Parle à quelqu'un. Marche 20 min."
+  },
+  "mos": {
+    "ventre": "Yi koom a yiib. Di raas, laare. A yelle tawa 3 zii, wa CSPS.",
+    "tete": "Leogse. Yi koom. Un coup de paracétamol.",
+    "fievre": "Yi koom a yiib. A yelle tawa 2 zii, wa CSPS.",
     "palu": "Palu yaa kabe. Taag ta wa CSPS raag taare.",
     "plaie": "Kogde a koom + sabun. Zaks bétadine. A tuma pus, wa CSPS.",
-    "dent": "Kogde a koom sore. Wa dentist a yelle taa taaba.",
+    "dent": "Kogde a koom sore. Wa dentiste a yelle taa taaba.",
     "yeux": "Da kogse. Kogde a koom. A tuma pus, wa CSPS.",
     "stress": "Fooyem 5 min. Taa a taaba. Yidg a 20 min."
   },
   "dyu": {
-    "ventre": "I ji ji ka caaya. A dimi: malo, banan. A ka 3 don, taa CSPS.",
+    "ventre": "I ji ji ka caaya. A dimi : malo, banan. A ka 3 don, taa CSPS.",
     "tete": "A laye. I ji ji. A ta paracétamol.",
-    "fievre": "I ji ka caaya. A ka 2 don, taa CSPS.",
+    "fievre": "I ji ji ka caaya. A ka 2 don, taa CSPS.",
     "palu": "Palu be se. Taag wa CSPS ka jɛkɛ.",
     "plaie": "A ko a ji + sabuni. A la bétadine. A ka pus, taa CSPS.",
     "dent": "A ko a ji kɔgɔlen. Taa dentist fɛ.",
@@ -60,13 +103,33 @@ const conseils = {
 };
 
 const motsCles = {
-  "fr": ["ventre","tete","fievre","palu","courbatures","plaie","dent","yeux","stress"],
-  "mos": ["puga","yuur","wemda","palu","kugri","kombgo","nuo","gese","sore"],
-  "dyu": ["kono","kun","sumaya","palu","farigan","juru","nin","nya","hɛrɛ"]
+  "fr": ["ventre","tete","fievre","palu","plaie","dent","yeux","stress"],
+  "mos": ["puga","yuur","wemda","palu","kombgo","nuo","gese","sore"],
+  "dyu": ["kono","kun","sumaya","palu","juru","nin","nya","hɛrɛ"]
 };
 
 function ecouter() {
   const lang = document.getElementById("langue").value;
   const recognition = new webkitSpeechRecognition();
-  recognition.lang = lang === 'fr' ? 'fr-FR' : 'fr-FR'; // téléphone comprend mieux fr pour l'instant
-  recognition.onresult
+  recognition.lang = 'fr-FR'; 
+  recognition.onresult = (event) => {
+    const texte = event.results[0][0].transcript.toLowerCase();
+    let reponse = "Je n'ai pas compris / M paamame / N t'a faamu";
+
+    motsCles[lang].forEach((mot, i) => {
+      if(texte.includes(mot) || texte.includes(Object.keys(conseils.fr)[i])) {
+        const cle = Object.keys(conseils.fr)[i];
+        reponse = conseils[lang][cle];
+      }
+    });
+    document.getElementById("resultat").innerHTML = "<b>Conseil:</b> " + reponse;
+  };
+  recognition.start();
+}
+
+function appeler() {
+  window.location.href = "tel:112";
+}
+</script>
+</body>
+</html>
