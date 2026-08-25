@@ -3,67 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DocteurVoice</title>
+<title>DocteurVoice V3 - 3 Langues</title>
 <style>
-body {font-family: Arial; background: #e8f5e9; text-align: center; padding: 20px;}
-h1 {color: #2e7d32;}
-button {background: #2e7d32; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 50px; cursor: pointer;}
-#resultat {background: white; margin: 20px auto; padding: 15px; border-radius: 10px; max-width: 400px; text-align: left;}
-.alerte {color: red; font-size: 12px; margin-top: 20px;}
+body { font-family: Arial; background: #e8f5e9; text-align: center; padding: 20px; }
+h1 { color: #2e7d32; }
+select, button { padding: 15px; font-size: 16px; border-radius: 10px; margin: 10px; border: none; }
+button { background: #2e7d32; color: white; cursor: pointer; }
+.urgence { background: red; }
+#resultat { background: white; margin: 20px auto; padding: 20px; border-radius: 10px; max-width: 500px; text-align: left; }
 </style>
 </head>
 <body>
-
-<h1>🩺 DocteurVoice</h1>
-<p>Parle pour décrire ton problème</p>
-
-<button id="btn">🎤 Parler</button>
-
+<h1>🩺 DocteurVoice V3</h1>
+<select id="langue">
+  <option value="fr">Français</option>
+  <option value="mos">Mooré</option>
+  <option value="dyu">Dioula</option>
+</select>
+<br>
+<button onclick="ecouter()">🎤 Parler</button>
+<button class="urgence" onclick="appeler()">🚨 Urgence 112</button>
 <div id="resultat"></div>
 
-<p class="alerte">Attention: Ceci n'est pas un médecin. En cas d'urgence, allez au CSPS ou appelez le 112.</p>
-
 <script>
-const btn = document.getElementById('btn');
-const resultat = document.getElementById('resultat');
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.lang = 'fr-FR';
-
-btn.onclick = () => {
-  recognition.start();
-  btn.innerText = "🎤 J'écoute...";
-}
-
-recognition.onresult = (event) => {
-  const texte = event.results[0][0].transcript.toLowerCase();
-  btn.innerText = "🎤 Parler";
-  donnerConseil(texte);
-}
-
-function donnerConseil(texte) {
-  let reponse = "Désolé, je n'ai pas compris. Décris tes symptômes.";
-  
-  if(texte.includes("ventre") || texte.includes("estomac")) {
-    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Ventre:</b> Bois beaucoup d'eau. Mange léger: riz, banane. Évite le gras et le piment. Si douleur > 3 jours, va au CSPS.`;
+const conseils = {
+  "fr": {
+    "ventre": "Bois beaucoup d'eau. Mange léger: riz, banane. Si douleur > 3 jours, va au CSPS.",
+    "tete": "Repose-toi. Bois de l'eau. Paracétamol si besoin.",
+    "fievre": "Bois beaucoup d'eau. Si fièvre > 38.5°C pendant 2 jours, va au CSPS.",
+    "palu": "Attention Palu possible. Va faire un test au CSPS rapidement.",
+    "plaie": "Lave à l'eau + savon. Mets bétadine. Si pus, va au CSPS.",
+    "dent": "Rince à l'eau salée tiède. Va chez le dentiste si ça dure.",
+    "yeux": "Ne te frotte pas. Lave avec eau propre bouillie. Si pus, va au CSPS.",
+    "stress": "Respire 5 min. Parle à quelqu'un. Marche 20 min."
+  },
+  "mos": {
+    "ventre": "Yi koom a yiib. Di raas, laare. A yelle tawa 3 zii, wa CSPS.",
+    "tete": "Leogse. Yi koom. A raan paracétamol.",
+    "fievre": "Yi koom a yiib. A yelle tawa 2 zii, wa CSPS.",
+    "palu": "Palu yaa kabe. Taag ta wa CSPS raag taare.",
+    "plaie": "Kogde a koom + sabun. Zaks bétadine. A tuma pus, wa CSPS.",
+    "dent": "Kogde a koom sore. Wa dentist a yelle taa taaba.",
+    "yeux": "Da kogse. Kogde a koom. A tuma pus, wa CSPS.",
+    "stress": "Fooyem 5 min. Taa a taaba. Yidg a 20 min."
+  },
+  "dyu": {
+    "ventre": "I ji ji ka caaya. A dimi: malo, banan. A ka 3 don, taa CSPS.",
+    "tete": "A laye. I ji ji. A ta paracétamol.",
+    "fievre": "I ji ka caaya. A ka 2 don, taa CSPS.",
+    "palu": "Palu be se. Taag wa CSPS ka jɛkɛ.",
+    "plaie": "A ko a ji + sabuni. A la bétadine. A ka pus, taa CSPS.",
+    "dent": "A ko a ji kɔgɔlen. Taa dentist fɛ.",
+    "yeux": "I kana i nɔgɔ. A ko a ji. A ka pus, taa CSPS.",
+    "stress": "A fo 5 min. A kuma mɔgɔ dɔ fɛ. A taa 20 min."
   }
-  else if(texte.includes("tête") || texte.includes("migraine")) {
-    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Mal de tête:</b> Repose-toi dans le calme. Bois de l'eau. Prends du paracétamol si besoin. Si très fort ou avec fièvre, consulte.`;
-  }
-  else if(texte.includes("fièvre") || texte.includes("chaud")) {
-    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Fièvre:</b> Bois beaucoup d'eau + paracétamol. Dégage-toi. Va au CSPS si >39° ou si ça dure >3 jours.`;
-  }
-  else if(texte.includes("toux") || texte.includes("rhume")) {
-    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Conseil Toux:</b> Bois du thé chaud au miel et citron. Évite le froid. Si toux > 2 semaines, va consulter.`;
-  }
-  else if(texte.includes("paludisme") || texte.includes("palu") || texte.includes("courbature")) {
-    reponse = `<b>Tu as dit:</b> ${texte}<br><br><b>Attention Palu:</b> Fièvre + courbatures = va faire un test au CSPS rapidement. Ne prends pas de médicaments sans avis.`;
-  }
-  
-  resultat.innerHTML = reponse;
-}
-</script>
+};
 
-</body>
-</html>
+const motsCles = {
+  "fr": ["ventre","tete","fievre","palu","courbatures","plaie","dent","yeux","stress"],
+  "mos": ["puga","yuur","wemda","palu","kugri","kombgo","nuo","gese","sore"],
+  "dyu": ["kono","kun","sumaya","palu","farigan","juru","nin","nya","hɛrɛ"]
+};
+
+function ecouter() {
+  const lang = document.getElementById("langue").value;
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = lang === 'fr' ? 'fr-FR' : 'fr-FR'; // téléphone comprend mieux fr pour l'instant
+  recognition.onresult
